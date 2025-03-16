@@ -23,8 +23,8 @@
 
 1. 克隆倉庫：
    ```
-   git clone https://github.com/yourusername/discord-verification-bot.git
-   cd discord-verification-bot
+   git clone https://github.com/cis2042/discordbot.git
+   cd discordbot
    ```
 
 2. 安裝依賴：
@@ -69,4 +69,4 @@
 
 ## 許可證
 
-MIT 
+MIT
