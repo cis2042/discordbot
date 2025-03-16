@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>錯誤 - Discord 驗證</title>
+  <style>
+    :root {
+      --primary-color: #4ade80;
+      --primary-hover: #22c55e;
+      --bg-dark: #121212;
+      --bg-card: #1e1e1e;
+      --text-light: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --error-bg: #7f1d1d;
+      --error-text: #fecaca;
+      --button-bg: #5865F2;
+      --button-hover: #4752C4;
+    }
+    
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+    
+    .error-icon {
+      color: #ef4444;
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .error-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    
+    .error-details {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-decoration: none;
+      margin: 8px;
+    }
+    
+    .btn-primary {
+      background-color: var(--button-bg);
+      color: var(--text-light);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--button-hover);
+    }
+    
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .buttons-container {
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h1 class="error-title"><%= message %></h1>
+      <p class="error-details"><%= details %></p>
+      
+      <div class="buttons-container">
+        <% if (typeof showReturnButton !== 'undefined' && showReturnButton) { %>
+          <a href="https://discord.com" class="btn btn-primary">返回 Discord</a>
+        <% } %>
+        <a href="javascript:history.back()" class="btn btn-secondary">返回上一頁</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

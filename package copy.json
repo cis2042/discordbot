@@ -1,0 +1,35 @@
+{
+  "name": "discord-verification-bot",
+  "version": "1.0.0",
+  "description": "Discord bot for user verification using reCAPTCHA and SMS",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "NODE_ENV=development nodemon src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "verification",
+    "recaptcha",
+    "sms"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "mongoose": "^7.2.0",
+    "twilio": "^4.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

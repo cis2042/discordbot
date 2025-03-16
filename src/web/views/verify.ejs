@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord 驗證 - <%= guildName %></title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    :root {
+      --primary-color: #4ade80;
+      --primary-hover: #22c55e;
+      --bg-dark: #121212;
+      --bg-card: #1e1e1e;
+      --text-light: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --error-bg: #7f1d1d;
+      --error-text: #fecaca;
+      --success-bg: #064e3b;
+      --success-text: #a7f3d0;
+    }
+    
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: var(--bg-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    
+    .step-container {
+      transition: all 0.3s ease;
+      margin-bottom: 24px;
+    }
+    
+    .step-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .step-description {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    
+    .input-group {
+      margin-bottom: 16px;
+    }
+    
+    .input-label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      color: var(--text-light);
+      box-sizing: border-box;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: var(--bg-dark);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      margin-top: 8px;
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .error-container {
+      background-color: var(--error-bg);
+      color: var(--error-text);
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+    
+    .success-container {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+    
+    .completion-icon {
+      color: var(--primary-color);
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* reCAPTCHA container styling */
+    #recaptcha-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    /* Custom select styling */
+    select.input-field {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    
+    .disclaimer {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>Discord 驗證</h1>
+        <p>為 <span style="font-weight: 600;"><%= guildName %></span> 完成驗證</p>
+      </div>
+      
+      <div class="step-indicator">
+        <div class="step-number">
+          <%= requireRecaptcha && requireSMS ? '2' : '1' %>
+        </div>
+        <div>驗證步驟</div>
+      </div>
+      
+      <!-- reCAPTCHA Step -->
+      <% if (requireRecaptcha) { %>
+      <div id="recaptcha-step" class="step-container <%= verificationStatus.reCaptcha ? 'hidden' : '' %>">
+        <h2 class="step-title">步驟 1: reCAPTCHA 驗證</h2>
+        <p class="step-description">請完成下面的reCAPTCHA驗證，證明您不是機器人。</p>
+        
+        <div id="recaptcha-container" class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+        
+        <button id="verify-recaptcha-btn" class="btn btn-primary">
+          驗證 reCAPTCHA
+        </button>
+      </div>
+      <% } %>
+      
+      <!-- SMS Verification Step -->
+      <% if (requireSMS) { %>
+      <div id="sms-step" class="step-container <%= (!requireRecaptcha || verificationStatus.reCaptcha) && !verificationStatus.sms ? '' : 'hidden' %>">
+        <h2 class="step-title">
+          <% if (requireRecaptcha) { %>步驟 2<% } else { %>步驟 1<% } %>: SMS 驗證
+        </h2>
+        <p class="step-description">請輸入您的手機號碼以接收驗證碼。</p>
+        
+        <div id="phone-input-container" class="<%= verificationStatus.sms ? 'hidden' : '' %>">
+          <div class="input-group">
+            <label for="country-code" class="input-label">國家代碼</label>
+            <select id="country-code" class="input-field">
+              <option value="886">台灣 (+886)</option>
+              <option value="1">美國/加拿大 (+1)</option>
+              <option value="86">中國 (+86)</option>
+              <option value="852">香港 (+852)</option>
+              <option value="65">新加坡 (+65)</option>
+              <option value="81">日本 (+81)</option>
+              <option value="82">韓國 (+82)</option>
+            </select>
+          </div>
+          
+          <div class="input-group">
+            <label for="phone-number" class="input-label">手機號碼</label>
+            <input type="tel" id="phone-number" class="input-field" placeholder="請輸入手機號碼">
+          </div>
+          
+          <button id="send-sms-btn" class="btn btn-primary">
+            發送驗證碼
+          </button>
+        </div>
+        
+        <div id="code-input-container" class="hidden">
+          <div class="input-group">
+            <label for="verification-code" class="input-label">驗證碼</label>
+            <input type="text" id="verification-code" class="input-field" placeholder="請輸入6位數驗證碼" maxlength="6">
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">驗證碼已發送到您的手機，有效期5分鐘</p>
+          </div>
+          
+          <button id="verify-code-btn" class="btn btn-primary">
+            驗證
+          </button>
+          <button id="resend-code-btn" class="btn btn-secondary">
+            重新發送驗證碼
+          </button>
+        </div>
+        
+        <p class="disclaimer">標準簡訊費率可能適用。您的號碼不會被儲存。</p>
+      </div>
+      <% } %>
+      
+      <!-- Completion Step -->
+      <div id="completion-step" class="step-container hidden" style="text-align: center;">
+        <div style="margin-bottom: 24px;">
+          <div class="completion-icon">✓</div>
+          <h2 class="step-title">驗證成功！</h2>
+          <p class="step-description">您已完成所有驗證步驟。</p>
+        </div>
+        
+        <p style="margin-bottom: 16px;">您現在可以返回Discord，已授予您訪問<span style="font-weight: 600;"><%= guildName %></span>的權限。</p>
+        
+        <a href="https://discord.com/channels/<%= guildId %>" target="_blank" class="btn btn-primary">
+          返回Discord
+        </a>
+      </div>
+      
+      <!-- Error messages -->
+      <div id="error-container" class="error-container hidden">
+        <span id="error-message">出錯了</span>
+      </div>
+      
+      <!-- Success messages -->
+      <div id="success-container" class="success-container hidden">
+        <span id="success-message">成功</span>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Store verification data
+    const userData = {
+      userId: "<%= userId %>",
+      token: "<%= token %>",
+      guildId: "<%= guildId %>",
+      verificationStatus: JSON.parse('<%= JSON.stringify(verificationStatus) %>')
+    };
+    
+    // Check if we're in mock mode
+    const mockMode = <%= process.env.USE_MOCK_MODE === 'true' ? 'true' : 'false' %>;
+    
+    // DOM elements
+    const recaptchaStep = document.getElementById('recaptcha-step');
+    const smsStep = document.getElementById('sms-step');
+    const completionStep = document.getElementById('completion-step');
+    const phoneInputContainer = document.getElementById('phone-input-container');
+    const codeInputContainer = document.getElementById('code-input-container');
+    const errorContainer = document.getElementById('error-container');
+    const errorMessage = document.getElementById('error-message');
+    const successContainer = document.getElementById('success-container');
+    const successMessage = document.getElementById('success-message');
+    
+    // Buttons
+    const verifyRecaptchaBtn = document.getElementById('verify-recaptcha-btn');
+    const sendSmsBtn = document.getElementById('send-sms-btn');
+    const verifyCodeBtn = document.getElementById('verify-code-btn');
+    const resendCodeBtn = document.getElementById('resend-code-btn');
+    
+    // Input fields
+    const countryCodeSelect = document.getElementById('country-code');
+    const phoneNumberInput = document.getElementById('phone-number');
+    const verificationCodeInput = document.getElementById('verification-code');
+    
+    // Show error message
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorContainer.classList.remove('hidden');
+      successContainer.classList.add('hidden');
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        errorContainer.classList.add('hidden');
+      }, 5000);
+    }
+    
+    // Show success message
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successContainer.classList.remove('hidden');
+      errorContainer.classList.add('hidden');
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        successContainer.classList.add('hidden');
+      }, 5000);
+    }
+    
+    // Update UI based on verification status
+    function updateUI() {
+      // If both verifications are complete, show completion step
+      if ((userData.verificationStatus.reCaptcha || !<%= requireRecaptcha %>) && 
+          (userData.verificationStatus.sms || !<%= requireSMS %>)) {
+        
+        // Complete verification
+        completeVerification();
+      }
+      // If reCAPTCHA is complete but SMS is required, show SMS step
+      else if (userData.verificationStatus.reCaptcha && <%= requireSMS %> && !userData.verificationStatus.sms) {
+        if (recaptchaStep) recaptchaStep.classList.add('hidden');
+        smsStep.classList.remove('hidden');
+        smsStep.classList.add('fade-in');
+      }
+    }
+    
+    // Complete verification and assign roles
+    async function completeVerification() {
+      try {
+        const response = await fetch('/verify/complete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userData.userId,
+            token: userData.token,
+            guildId: userData.guildId
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Hide all steps and show completion
+          if (recaptchaStep) recaptchaStep.classList.add('hidden');
+          if (smsStep) smsStep.classList.add('hidden');
+          completionStep.classList.remove('hidden');
+          completionStep.classList.add('fade-in');
+        } else {
+          showError(data.message || '完成驗證時出錯');
+        }
+      } catch (error) {
+        console.error('Error completing verification:', error);
+        showError('完成驗證時出錯。請稍後再試。');
+      }
+    }
+    
+    // Verify reCAPTCHA
+    if (verifyRecaptchaBtn) {
+      verifyRecaptchaBtn.addEventListener('click', async () => {
+        const recaptchaResponse = grecaptcha.getResponse();
+        
+        if (!recaptchaResponse && !mockMode) {
+          showError('請完成reCAPTCHA驗證');
+          // 重置 reCAPTCHA 並讓用戶重新嘗試
+          grecaptcha.reset();
+          return;
+        }
+        
+        try {
+          verifyRecaptchaBtn.disabled = true;
+          verifyRecaptchaBtn.textContent = '驗證中...';
+          
+          const response = await fetch('/api/recaptcha/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              recaptchaToken: recaptchaResponse || 'mock-token',
+              userId: userData.userId,
+              verificationToken: userData.token
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            userData.verificationStatus = data.verificationStatus;
+            showSuccess('reCAPTCHA驗證成功！');
+            
+            // Update UI based on new status
+            updateUI();
+          } else {
+            showError(data.message || 'reCAPTCHA驗證失敗');
+            if (!mockMode) {
+              grecaptcha.reset();
+            }
+            verifyRecaptchaBtn.disabled = false;
+            verifyRecaptchaBtn.textContent = '驗證 reCAPTCHA';
+          }
+        } catch (error) {
+          console.error('Error verifying reCAPTCHA:', error);
+          showError('驗證reCAPTCHA時出錯。請稍後再試。');
+          if (!mockMode) {
+            grecaptcha.reset();
+          }
+          verifyRecaptchaBtn.disabled = false;
+          verifyRecaptchaBtn.textContent = '驗證 reCAPTCHA';
+        }
+      });
+    }
+    
+    // Send SMS verification code
+    if (sendSmsBtn) {
+      sendSmsBtn.addEventListener('click', async () => {
+        const countryCode = countryCodeSelect.value;
+        const phoneNumber = phoneNumberInput.value.trim();
+        
+        if (!phoneNumber) {
+          showError('請輸入手機號碼');
+          return;
+        }
+        
+        try {
+          sendSmsBtn.disabled = true;
+          sendSmsBtn.textContent = '發送中...';
+          
+          const response = await fetch('/api/sms/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              countryCode,
+              phoneNumber,
+              userId: userData.userId,
+              token: userData.token
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            showSuccess('驗證碼已發送到您的手機');
+            
+            // Show code input
+            phoneInputContainer.classList.add('hidden');
+            codeInputContainer.classList.remove('hidden');
+          } else {
+            showError(data.message || '發送驗證碼失敗');
+          }
+        } catch (error) {
+          console.error('Error sending SMS code:', error);
+          showError('發送驗證碼時出錯。請稍後再試。');
+        } finally {
+          sendSmsBtn.disabled = false;
+          sendSmsBtn.textContent = '發送驗證碼';
+        }
+      });
+    }
+    
+    // Verify SMS code
+    if (verifyCodeBtn) {
+      verifyCodeBtn.addEventListener('click', async () => {
+        const code = verificationCodeInput.value.trim();
+        
+        if (!code) {
+          showError('請輸入驗證碼');
+          return;
+        }
+        
+        try {
+          verifyCodeBtn.disabled = true;
+          verifyCodeBtn.textContent = '驗證中...';
+          
+          const response = await fetch('/api/sms/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              code,
+              userId: userData.userId,
+              token: userData.token
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            userData.verificationStatus = data.verificationStatus;
+            showSuccess('SMS驗證成功！');
+            
+            // Update UI based on new status
+            updateUI();
+          } else {
+            showError(data.message || '驗證碼錯誤');
+          }
+        } catch (error) {
+          console.error('Error verifying SMS code:', error);
+          showError('驗證SMS代碼時出錯。請稍後再試。');
+        } finally {
+          verifyCodeBtn.disabled = false;
+          verifyCodeBtn.textContent = '驗證';
+        }
+      });
+    }
+    
+    // Resend verification code
+    if (resendCodeBtn) {
+      resendCodeBtn.addEventListener('click', () => {
+        // Show phone input container again
+        phoneInputContainer.classList.remove('hidden');
+        codeInputContainer.classList.add('hidden');
+      });
+    }
+    
+    // Check status on page load
+    updateUI();
+  </script>
+</body>
+</html>

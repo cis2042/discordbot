@@ -1,0 +1,18 @@
+[build]
+  command = "npm install"
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  external_node_modules = ["express"]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/verify/*"
+  to = "/.netlify/functions/api/verify/:splat"
+  status = 200
+  force = true
+
+[build.environment]
+  NODE_ENV = "production"
+  USE_MOCK_MODE = "true" 
